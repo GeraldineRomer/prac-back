@@ -1,16 +1,17 @@
-from flask import Flask
+from flask import Flask, jsonify
 from os import environ
 
-from src.database import db, ma, migrate
+from src.endpoints.reservas import reservas
+from src.endpoints.clientes import clientes
+from src.endpoints.viajes import viajes
+from src.endpoints.consultas import consultas
 
-from src.endpoints.products import products
-from src.endpoints.users import users
-from src.endpoints.accounts import accounts
+from src.database import db, ma, migrate
 
 def create_app():
     app = Flask(__name__,
     instance_relative_config=True)
-
+    
     app.config['ENVIRONMENT'] = environ.get("ENVIRONMENT")
     config_class = 'config.DevelopmentConfig'
 
@@ -22,13 +23,15 @@ def create_app():
         case _:
             print(f"ERROR: environment unknown: {app.config.get('ENVIRONMENT')}")
             app.config['ENVIRONMENT'] = "development"
-            
+    
+    
+    
     app.config.from_object(config_class)
     
-    app.register_blueprint(products)
-    app.register_blueprint(accounts)
-    app.register_blueprint(users)
-    
+    app.register_blueprint(reservas)
+    app.register_blueprint(consultas)
+    app.register_blueprint(clientes)
+    app.register_blueprint(viajes)
     
     db.init_app(app)
     ma.init_app(app)
